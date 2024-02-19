@@ -10,11 +10,12 @@ function App() {
   const [open, setOpen] = useState(false);
   const [selectedFiles, setSelectedFiles] = useState([]);
   const [fileContents, setFileContents] = useState(null);
+  const [fileType, setFileType] = useState(null);
   const [searchTerm, setSearchTerm] = useState(null);
 
   const handleDrawerOpen = useCallback(() => {
     setOpen(true);
-  },[]);
+  }, []);
 
   const handleDrawerClose = () => {
     setOpen(false);
@@ -26,42 +27,49 @@ function App() {
       const content = event.target.result;
       setFileContents(content);
     };
-    fileReader.readAsText(file);
+    if (file && file.type.startsWith("image/")) {
+      fileReader.readAsDataURL(file);
+      setFileType("img");
+    } else {
+      fileReader.readAsText(file);
+      setFileType("txt");
+    }
   };
 
   const handleFileChange = useCallback((event) => {
     const files = event.target.files;
     setSelectedFiles(files);
-  },[]);
+  }, []);
 
   const handleSearchChange = useCallback((value) => {
     setSearchTerm(value);
   }, []);
 
   return (
-      <div className="App">
-        <Box sx={{ display: "flex" }}>
-          <CssBaseline />
-          <Navbar
-            open={open}
-            handleDrawerOpen={handleDrawerOpen}
-            handleFileChange={handleFileChange}
-            handleSearchChange={handleSearchChange}
-          />
-          <PersistentDrawerLeft
-            handleDrawerClose={handleDrawerClose}
-            open={open}
-            selectedFiles={selectedFiles}
-            handleFileClick={handleFileClick}
-            handleFileChange={handleFileChange}
-          />
-          <MainContent
-            open={open}
-            content={fileContents}
-            searchTerm={searchTerm}
-          />
-        </Box>
-      </div>
+    <div className="App">
+      <Box sx={{ display: "flex" }}>
+        <CssBaseline />
+        <Navbar
+          open={open}
+          handleDrawerOpen={handleDrawerOpen}
+          handleFileChange={handleFileChange}
+          handleSearchChange={handleSearchChange}
+        />
+        <PersistentDrawerLeft
+          handleDrawerClose={handleDrawerClose}
+          open={open}
+          selectedFiles={selectedFiles}
+          handleFileClick={handleFileClick}
+          handleFileChange={handleFileChange}
+        />
+        <MainContent
+          open={open}
+          content={fileContents}
+          searchTerm={searchTerm}
+          fileType={fileType}
+        />
+      </Box>
+    </div>
   );
 }
 

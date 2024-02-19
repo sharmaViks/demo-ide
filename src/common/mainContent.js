@@ -31,23 +31,28 @@ const Main = styled("main", { shouldForwardProp: (prop) => prop !== "open" })(
 );
 
 const highlightSearchTerm = (text, term) => {
-  const regex = new RegExp(`(${term})`, 'gi');
-  return text?.replace(regex, '<mark>$1</mark>');
-};
-
-export default function MainContent({ open, content,searchTerm }) {
-
-const highlightedParagraph = () => {
-  if (!searchTerm) {
-    return content;
+  if (term && text) {
+    const regex = new RegExp(`(${term})`, "gi");
+    return text?.replace(regex, "<mark>$1</mark>");
   }
-  return content && highlightSearchTerm(content, searchTerm);
 };
+
+export default function MainContent({ open, content, searchTerm, fileType }) {
+  const highlightedParagraph = () => {
+    if (!searchTerm) {
+      return content;
+    }
+    return content && highlightSearchTerm(content, searchTerm);
+  };
   return (
     <Main open={open}>
       <DrawerHeader />
-      <p dangerouslySetInnerHTML={{ __html: highlightedParagraph() }} />
+      {fileType === "txt" && (
+        <p dangerouslySetInnerHTML={{ __html: highlightedParagraph() }} />
+      )}
+      {fileType === "img" && (
+        <img src={content} alt="Uploaded Image" style={{ maxWidth: "100%" }} />
+      )}
     </Main>
   );
 }
-
